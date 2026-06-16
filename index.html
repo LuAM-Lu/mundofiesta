@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+    <title>Mundo Fiesta - Sistema de Acceso Inteligente Mundo Fiesta</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet"/>
+    <!-- Material Symbols Outlined -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <!-- Tailwind Configuration -->
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#006493",        /* Sky Blue */
+              "primary-container": "#53a7e0",
+              "on-primary-container": "#003a58",
+              "secondary": "#336b00",      /* Earth Green */
+              "secondary-container": "#acf775",
+              "on-secondary-container": "#255100",
+              "tertiary": "#805600",       /* Sunny Yellow */
+              "tertiary-container": "#d5930b",
+              "on-tertiary-container": "#4c3100",
+              "error": "#ba1a1a",          /* Celebration Red */
+              "error-container": "#ffdad6",
+              "background": "#fbf8ff",
+              "surface": "#ffffff",
+              "surface-container": "#edecff",
+              "surface-container-low": "#f4f2ff",
+              "surface-container-highest": "#dfe0ff",
+              "on-surface": "#14183c",
+              "on-surface-variant": "#40484f",
+              "outline-variant": "#bfc7d0",
+              "outline": "#707880"
+            },
+            fontFamily: {
+              sans: ["Nunito Sans", "sans-serif"],
+              headline: ["Quicksand", "sans-serif"]
+            }
+          }
+        }
+      }
+    </script>
+
+    <style>
+        /* Animación de escaneo láser en la sección Hero */
+        .laser-line {
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #53a7e0, #acf775, #d5930b, transparent);
+            width: 200%;
+            animation: scan 3s linear infinite;
+            border-radius: 2px;
+        }
+        @keyframes scan {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0%); }
+        }
+
+        /* Animación del haz láser en el QR */
+        .qr-laser {
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #acf775, #53a7e0, #acf775, transparent);
+            width: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            box-shadow: 0 0 12px #acf775, 0 0 4px #53a7e0;
+        }
+
+        .scanning .qr-laser {
+            animation: qr-scan 1.5s ease-in-out infinite;
+            opacity: 1;
+        }
+
+        @keyframes qr-scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        /* Efecto de pulso para hardware online */
+        .pulse-green {
+            box-shadow: 0 0 0 0 rgba(172, 247, 117, 0.7);
+            animation: pulse-green-anim 2s infinite;
+        }
+        @keyframes pulse-green-anim {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(51, 107, 0, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 8px rgba(51, 107, 0, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(51, 107, 0, 0);
+            }
+        }
+
+        /* Efecto de hotspot palpitante en HTML */
+        .hotspot-ring {
+            animation: hotspot-pulse-css 1.8s infinite;
+        }
+        @keyframes hotspot-pulse-css {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            50% { transform: scale(1.6); opacity: 0.3; }
+            100% { transform: scale(2.4); opacity: 0; }
+        }
+
+        /* Sombra premium para las tarjetas */
+        .friendly-shadow {
+            box-shadow: 0 12px 40px rgba(20, 24, 60, 0.06), 0 2px 8px rgba(20, 24, 60, 0.02);
+        }
+
+        .lg\:phone-shadow {
+            @media (min-width: 1024px) {
+                box-shadow: 0 25px 60px -15px rgba(20, 24, 60, 0.4);
+            }
+        }
+
+        /* Animación para nuevos logs */
+        .log-entry-new {
+            animation: slide-in 0.4s ease-out forwards;
+        }
+        @keyframes slide-in {
+            0% { opacity: 0; transform: translateY(-10px); background-color: rgba(172, 247, 117, 0.2); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Ocultar barra de scroll estética */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-[#f5f6fa] text-on-surface h-full flex flex-col font-sans overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+
+    <!-- CONTENEDOR PRINCIPAL RESPONSIVO -->
+    <div class="flex-1 flex flex-col lg:flex-row h-full w-full overflow-hidden">
+
+        <!-- ================= COLUMNA IZQUIERDA: PRESENTACIÓN DE VENTAS ================= -->
+        <section id="doc-section" class="w-full lg:w-7/12 xl:w-8/12 bg-white flex flex-col h-full overflow-y-auto border-r border-outline-variant/30 relative">
+            <!-- Fondo Interactivo Sutil -->
+            <canvas id="interactive-bg" class="absolute inset-0 pointer-events-none z-0"></canvas>
+
+            <!-- Cabecera Centrada Horizontalmente con Logo Grande -->
+            <header class="bg-white/90 backdrop-blur-sm px-6 py-8 flex flex-col items-center justify-center border-b border-outline-variant/10 space-y-2 shrink-0 relative z-10">
+                <img src="logo2.png" alt="Mundo Fiesta" class="h-28 w-auto object-contain" onerror="this.src='logo.jpg'; this.onerror=null;"/>
+                <h1 class="font-headline font-bold text-3xl text-primary tracking-tight text-center">MUNDO FIESTA</h1>
+                <p class="text-xs uppercase tracking-widest text-outline font-bold text-center">Acceso Inteligente Mundo Fiesta</p>
+            </header>
+
+            <!-- Contenido de la Presentación -->
+            <div class="p-6 md:p-10 space-y-10 max-w-4xl mx-auto relative z-10">
+
+                <!-- Hero Introducción Comercial -->
+                <div class="space-y-4">
+                    <div class="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
+                        <span class="material-symbols-outlined text-primary text-xs font-bold">stars</span>
+                        <span class="text-primary text-[10px] font-bold uppercase tracking-wider">Fricción Cero</span>
+                    </div>
+                    <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface leading-tight">
+                        La entrada del futuro para un parque infantil exclusivo
+                    </h2>
+                    <p class="text-on-surface-variant text-sm md:text-base leading-relaxed font-light">
+                        Diseñamos una solución de control de acceso premium basada en credenciales digitales (Códigos QR) que elimina las filas, los tickets físicos y las demoras, garantizando un ingreso fluido en menos de 0.5 segundos.
+                    </p>
+                    <div class="overflow-hidden h-1 w-full bg-surface-container rounded-full mt-2">
+                        <div class="laser-line"></div>
+                    </div>
+                </div>
+
+                <!-- Botón CTA para ir a la Simulación de Acceso (Visto tanto en mobile como en desktop) -->
+                <div class="bg-primary/5 rounded-2xl p-6 border border-primary/25 text-center space-y-3">
+                    <span class="material-symbols-outlined text-primary text-3xl">qr_code_2</span>
+                    <h3 class="font-headline font-bold text-xs text-on-surface uppercase tracking-wider">¿Listo para probarlo?</h3>
+                    <p class="text-xs text-on-surface-variant leading-relaxed">
+                        Interactúa con la app del cliente generando el escaneo, y observa en tiempo real los cambios del operador.
+                    </p>
+                    <button onclick="switchTab('app')" class="w-full max-w-xs mx-auto py-3.5 bg-primary text-white rounded-full font-headline font-bold text-xs uppercase tracking-wider shadow-md hover:bg-primary/90 active:scale-95 duration-200 flex items-center justify-center gap-2 border border-primary-container/20">
+                        <span class="material-symbols-outlined text-sm">qr_code_2</span>
+                        Simular Escaneo en Puerta
+                    </button>
+                </div>
+
+                <!-- El Viaje del Usuario (Flujo de Ingreso) -->
+                <div class="space-y-4">
+                    <h3 class="font-headline font-bold text-base text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-lg">directions_run</span>
+                        El Viaje del Usuario
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Paso 1 -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-outline-variant/10 flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold font-headline text-xs shrink-0">1</div>
+                            <div class="space-y-0.5">
+                                <h4 class="font-headline font-bold text-xs text-on-surface">Aproximación</h4>
+                                <p class="text-[10px] text-on-surface-variant leading-relaxed">El padre/madre abre el Pase VIP digital en la pantalla de su teléfono celular al llegar.</p>
+                            </div>
+                        </div>
+                        <!-- Paso 2 -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-outline-variant/10 flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold font-headline text-xs shrink-0">2</div>
+                            <div class="space-y-0.5">
+                                <h4 class="font-headline font-bold text-xs text-on-surface">Escaneo Instantáneo</h4>
+                                <p class="text-[10px] text-on-surface-variant leading-relaxed">El usuario aproxima el teléfono al Lector Domo 9300D. Se escanea en cualquier ángulo.</p>
+                            </div>
+                        </div>
+                        <!-- Paso 3 -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-outline-variant/10 flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold font-headline text-xs shrink-0">3</div>
+                            <div class="space-y-0.5">
+                                <h4 class="font-headline font-bold text-xs text-on-surface">Validación Invisible</h4>
+                                <p class="text-[10px] text-on-surface-variant leading-relaxed">El ESP32 local valida el código en milisegundos mediante Wi-Fi con el servidor central.</p>
+                            </div>
+                        </div>
+                        <!-- Paso 4 -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-outline-variant/10 flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold font-headline text-xs shrink-0">4</div>
+                            <div class="space-y-0.5">
+                                <h4 class="font-headline font-bold text-xs text-on-surface">Apertura Mecánica</h4>
+                                <p class="text-[10px] text-on-surface-variant leading-relaxed">El relé de contacto seco manda el pulso y el torniquete se desbloquea suavemente.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROCESO DE ENTRADA INTELIGENTE CON IMAGEN ENTRADA.PNG Y HOTSPOTS INTERACTIVOS -->
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-headline font-bold text-base text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-lg">supervised_user_circle</span>
+                            Proceso de Entrada Inteligente
+                        </h3>
+                        <span class="text-[8px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full uppercase tracking-wider">Interactivo</span>
+                    </div>
+                    <p class="text-xs text-on-surface-variant">
+                        Toca los puntos amarillos palpitantes sobre la imagen de entrada para entender cómo opera cada componente:
+                    </p>
+
+                    <!-- Contenedor de Imagen de Entrada con Hotspots Superpuestos -->
+                    <div class="bg-slate-900 rounded-2xl p-3 border border-slate-800 shadow-inner flex flex-col items-center">
+                        
+                        <div class="relative w-full max-w-[500px] mx-auto bg-slate-900 overflow-hidden">
+                            <!-- Imagen entrada.png -->
+                            <img src="entrada.png" alt="Proceso de Entrada" class="w-full h-auto block rounded-xl" />
+                            
+                            <!-- Hotspot 1: Celular / Pase VIP -->
+                            <button onclick="selectHW('celular')" class="absolute" style="top: 24%; left: 63%; transform: translate(-50%, -50%); focus:outline-none;">
+                                <span id="ring-celular" class="absolute inline-flex h-8 w-8 rounded-full bg-tertiary opacity-45 hotspot-ring -left-1 -top-1"></span>
+                                <span id="hotspot-celular" class="relative flex items-center justify-center h-6 w-6 rounded-full bg-tertiary text-white border-2 border-white text-[10px] font-bold shadow-md hover:scale-110 transition-transform duration-200">1</span>
+                            </button>
+
+                            <!-- Hotspot 2: Lector Domo -->
+                            <button onclick="selectHW('domo')" class="absolute" style="top: 31%; left: 67.5%; transform: translate(-50%, -50%); focus:outline-none;">
+                                <span id="ring-domo" class="absolute inline-flex h-8 w-8 rounded-full bg-tertiary opacity-45 hotspot-ring -left-1 -top-1"></span>
+                                <span id="hotspot-domo" class="relative flex items-center justify-center h-6 w-6 rounded-full bg-tertiary text-white border-2 border-white text-[10px] font-bold shadow-md hover:scale-110 transition-transform duration-200">2</span>
+                            </button>
+
+                            <!-- Hotspot 3: ESP32 / Cerebro (Parte trasera/base del torniquete) -->
+                            <button onclick="selectHW('esp32')" class="absolute" style="top: 72%; left: 69%; transform: translate(-50%, -50%); focus:outline-none;">
+                                <span id="ring-esp32" class="absolute inline-flex h-8 w-8 rounded-full bg-tertiary opacity-45 hotspot-ring -left-1 -top-1"></span>
+                                <span id="hotspot-esp32" class="relative flex items-center justify-center h-6 w-6 rounded-full bg-tertiary text-white border-2 border-white text-[10px] font-bold shadow-md hover:scale-110 transition-transform duration-200">3</span>
+                            </button>
+
+                            <!-- Hotspot 4: Torniquete (Brazos) -->
+                            <button onclick="selectHW('torniquete')" class="absolute" style="top: 50%; left: 61%; transform: translate(-50%, -50%); focus:outline-none;">
+                                <span id="ring-torniquete" class="absolute inline-flex h-8 w-8 rounded-full bg-tertiary opacity-45 hotspot-ring -left-1 -top-1"></span>
+                                <span id="hotspot-torniquete" class="relative flex items-center justify-center h-6 w-6 rounded-full bg-tertiary text-white border-2 border-white text-[10px] font-bold shadow-md hover:scale-110 transition-transform duration-200">4</span>
+                            </button>
+                        </div>
+
+                        <!-- Detalle Informativo Dinámico -->
+                        <div id="hw-detail-panel" class="w-full mt-4 bg-slate-800 rounded-xl p-4 border border-slate-700 transition-all duration-300">
+                            <h4 id="hw-title" class="font-headline font-bold text-amber-400 text-xs flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px]">info</span>
+                                1. Celular del Cliente (Pase QR)
+                            </h4>
+                            <p id="hw-desc" class="text-slate-300 text-[10px] mt-1.5 leading-relaxed">
+                                El cliente muestra su Pase VIP digital en la pantalla de su celular al aproximarse a la entrada. No requiere tickets impresos que puedan perderse, agilizando el paso desde el primer segundo.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EQUIPAMIENTO Y COSTOS DETALLADOS DE VENTA -->
+                <div class="space-y-4">
+                    <h3 class="font-headline font-bold text-base text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-lg">payments</span>
+                        Equipamiento y Presupuesto del Proyecto
+                    </h3>
+                    <p class="text-xs text-on-surface-variant">
+                        Detalle comercial de la inversión en hardware, desarrollo a medida y suscripción mensual para la operación de Mundo Fiesta:
+                    </p>
+
+                    <!-- Lista de precios comercial -->
+                    <div class="space-y-3">
+                        <!-- Hardware list -->
+                        <div class="bg-slate-50 rounded-2xl p-4 border border-outline-variant/15 space-y-3">
+                            <h4 class="font-headline font-bold text-xs text-primary uppercase tracking-wider pb-2 border-b border-outline-variant/10">
+                                Inversión Inicial (Hardware y Desarrollo)
+                            </h4>
+                            
+                            <div class="space-y-2.5">
+                                <!-- Lector Domo -->
+                                <div class="flex justify-between items-center text-xs">
+                                    <div class="space-y-0.5">
+                                        <p class="font-bold text-on-surface">Lector Domo QR 9300D</p>
+                                        <p class="text-[9px] text-on-surface-variant font-light">Escáner láser industrial omnidireccional de alta velocidad.</p>
+                                    </div>
+                                    <span class="font-headline font-bold text-on-surface shrink-0">$80 USD</span>
+                                </div>
+                                <!-- ESP32 Core -->
+                                <div class="flex justify-between items-center text-xs">
+                                    <div class="space-y-0.5">
+                                        <p class="font-bold text-on-surface">Cerebro de Control ESP32 y Electrónica</p>
+                                        <p class="text-[9px] text-on-surface-variant font-light">Microcontrolador local e integración del circuito integrado.</p>
+                                    </div>
+                                    <span class="font-headline font-bold text-on-surface shrink-0">$80 USD</span>
+                                </div>
+                                <!-- Módulo Relé -->
+                                <div class="flex justify-between items-center text-xs">
+                                    <div class="space-y-0.5">
+                                        <p class="font-bold text-on-surface">Módulo Relé de Seguridad</p>
+                                        <p class="text-[9px] text-on-surface-variant font-light">Aislamiento optoacoplado de contacto seco para pulso de apertura.</p>
+                                    </div>
+                                    <span class="font-headline font-bold text-on-surface shrink-0">$70 USD</span>
+                                </div>
+                                <!-- Torniquete (Opcional y Desmarcable) -->
+                                <div id="row-torniquete" class="flex justify-between items-center text-xs transition-opacity duration-200 gap-3">
+                                    <div class="space-y-0.5">
+                                        <p class="font-bold text-on-surface">Torniquete de Acero Inoxidable Premium <span class="text-[8px] text-amber-600 font-extrabold bg-amber-50 border border-amber-200 px-1 py-0.5 rounded ml-1">OPCIONAL</span></p>
+                                        <p class="text-[9px] text-on-surface-variant font-light">Barrera física bidireccional de alta durabilidad con solenoide.</p>
+                                    </div>
+                                    <div class="flex items-center gap-3 shrink-0">
+                                        <span class="font-headline font-bold text-on-surface">$1,450 USD</span>
+                                        <input type="checkbox" id="check-torniquete" checked onchange="updateTotalBudget()" class="rounded border-outline text-primary focus:ring-primary h-4 w-4" />
+                                    </div>
+                                </div>
+                                <!-- Desarrollo Landing -->
+                                <div class="flex justify-between items-center text-xs">
+                                    <div class="space-y-0.5">
+                                        <p class="font-bold text-on-surface">Desarrollo de Landing Web y Sistema de Pases</p>
+                                        <p class="text-[9px] text-on-surface-variant font-light">Portal web adaptativo y motor de generación de credenciales QR.</p>
+                                    </div>
+                                    <span class="font-headline font-bold text-on-surface shrink-0">$350 USD</span>
+                                </div>
+                                <!-- Mano de Obra de Instalación -->
+                                <div class="flex justify-between items-center text-xs border-t border-outline-variant/10 pt-2">
+                                    <div class="space-y-0.5">
+                                        <p class="font-bold text-on-surface">Mano de Obra de Instalación</p>
+                                        <p class="text-[9px] text-on-surface-variant font-light">Montaje, cableado estructurado y puesta a punto de los equipos.</p>
+                                    </div>
+                                    <span class="font-headline font-bold text-on-surface shrink-0">$200 USD</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center pt-3 border-t border-outline-variant/10 text-xs font-bold text-primary">
+                                <span>TOTAL INVERSIÓN INICIAL</span>
+                                <span id="total-inversion" class="font-headline text-sm">$2,230 USD</span>
+                            </div>
+                        </div>
+
+                        <!-- Suscripción mensual -->
+                        <div class="bg-slate-50 rounded-2xl p-4 border border-outline-variant/15 space-y-3">
+                            <h4 class="font-headline font-bold text-xs text-secondary uppercase tracking-wider pb-2 border-b border-outline-variant/10">
+                                Suscripción Mensual (Servicios Cloud)
+                            </h4>
+
+                            <div class="space-y-2.5">
+                                <div class="flex justify-between items-center text-xs">
+                                    <div class="space-y-0.5">
+                                        <p class="font-bold text-on-surface">Base de Datos y Plataforma en la Nube</p>
+                                        <p class="text-[9px] text-on-surface-variant font-light">Sincronización en vivo de accesos y estado del aforo en tiempo real.</p>
+                                    </div>
+                                    <span class="font-headline font-bold text-on-surface">$35 USD/mes</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <div class="space-y-0.5">
+                                        <p class="font-bold text-on-surface">Soporte Técnico VIP y Servidor Seguro</p>
+                                        <p class="text-[9px] text-on-surface-variant font-light">Mantenimiento preventivo, actualizaciones periódicas de software y soporte 24/7.</p>
+                                    </div>
+                                    <span class="font-headline font-bold text-on-surface">$25 USD/mes</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center pt-3 border-t border-outline-variant/10 text-xs font-bold text-secondary">
+                                <span>COSTO MENSUAL TOTAL</span>
+                                <span class="font-headline text-sm">$60 USD/mes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="pt-8 border-t border-outline-variant/20 text-center text-outline text-[11px] font-medium">
+                    &copy; 2026 Mundo Fiesta. Todos los derechos reservados.
+                </footer>
+            </div>
+        </section>
+
+        <!-- ================= COLUMNA DERECHA: INTERFAZ DE SIMULACIÓN ================= -->
+        <section id="simulator-section" class="w-full lg:w-5/12 xl:w-4/12 flex items-center justify-center p-0 lg:p-8 bg-slate-900 h-full overflow-y-auto shrink-0">
+            
+            <!-- MARCO SMARTPHONE: Solo se aplica en desktop (pantallas >= 1024px), en móvil se anula para ocupar pantalla completa -->
+            <div id="phone-wrapper" class="w-full h-full bg-background flex flex-col relative rounded-none border-0 shadow-none lg:max-w-[380px] lg:h-[720px] lg:rounded-[48px] lg:border-[10px] lg:border-slate-800 lg:shadow-2xl lg:my-auto lg:phone-shadow overflow-hidden">
+                
+                <!-- Notch/Cámara simulada superior -->
+                <div class="hidden lg:flex absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-2xl z-50 items-center justify-center">
+                    <div class="w-12 h-1 bg-slate-900 rounded-full mb-1"></div>
+                    <div class="w-2.5 h-2.5 bg-slate-900 rounded-full ml-3 mb-1"></div>
+                </div>
+
+                <!-- CONTENEDOR DE PANTALLA -->
+                <div class="flex-1 flex flex-col h-full w-full overflow-hidden relative pt-0 lg:pt-6 pb-16">
+                    
+                    <!-- VISTA 1: APLICACIÓN CLIENTE (APP MUNDO FIESTA) -->
+                    <div id="view-app" class="flex-1 flex flex-col overflow-y-auto no-scrollbar">
+                        <!-- Header de la App Cliente Centrado y Grande -->
+                        <div class="p-6 flex flex-col items-center justify-center bg-white border-b border-outline-variant/10 shadow-sm shrink-0 space-y-2">
+                            <img src="logo2.png" alt="Mundo Fiesta" class="h-16 w-auto object-contain" onerror="this.src='logo.jpg'; this.onerror=null;"/>
+                            <span class="font-headline font-bold text-sm text-primary tracking-tight">APP MUNDO FIESTA</span>
+                        </div>
+
+                        <!-- Contenedor del Pase VIP -->
+                        <div class="flex-1 px-5 py-6 flex flex-col justify-center items-center gap-6 relative">
+                            <!-- Burbujas decorativas traseras -->
+                            <div class="absolute inset-0 pointer-events-none opacity-20 overflow-hidden">
+                                <div class="absolute -top-12 -left-12 w-28 h-28 bg-primary-container rounded-full blur-2xl"></div>
+                                <div class="absolute -bottom-16 -right-16 w-36 h-36 bg-secondary-container rounded-full blur-2xl"></div>
+                            </div>
+
+                            <!-- Tarjeta VIP -->
+                            <div class="bg-white rounded-[28px] border border-outline-variant/30 w-full friendly-shadow p-6 flex flex-col gap-6 relative z-10 overflow-hidden">
+                                <!-- Linea de acento multicolor -->
+                                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary-container via-secondary-container to-tertiary-container"></div>
+                                
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-[10px] text-outline font-bold uppercase tracking-widest leading-none">Pase Digital</p>
+                                        <h3 class="font-headline font-bold text-base text-on-surface mt-1">Mundial VIP</h3>
+                                    </div>
+                                    <div class="bg-tertiary-container/10 border border-tertiary/20 px-3 py-1 rounded-full flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[14px] text-tertiary font-bold" style="font-variation-settings: 'FILL' 1;">stars</span>
+                                        <span class="text-on-tertiary-container font-sans font-bold text-[9px] uppercase tracking-wider">Socio Gold</span>
+                                    </div>
+                                </div>
+
+                                <!-- Nombre del Cliente -->
+                                <div class="text-center space-y-1">
+                                    <h2 class="font-headline font-bold text-xl text-on-surface leading-tight">Mateo García</h2>
+                                    <div id="client-status" class="inline-flex items-center gap-1.5 bg-secondary-container/20 border border-secondary/20 rounded-full px-3 py-1 mt-1">
+                                        <span class="w-2 h-2 rounded-full bg-secondary pulse-green"></span>
+                                        <span class="text-on-secondary-container font-sans font-bold text-[9px] uppercase tracking-widest">Acceso Autorizado</span>
+                                    </div>
+                                </div>
+
+                                <!-- Contenedor del Código QR -->
+                                <div class="w-full flex justify-center">
+                                    <div class="p-3 bg-white rounded-2xl border border-outline-variant/20 shadow-sm relative overflow-hidden" id="qr-container">
+                                        <div class="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-primary/20 rounded-tl-md"></div>
+                                        <div class="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-primary/20 rounded-tr-md"></div>
+                                        <div class="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-primary/20 rounded-bl-md"></div>
+                                        <div class="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-primary/20 rounded-br-md"></div>
+                                        
+                                        <!-- Imagen QR -->
+                                        <div class="relative w-40 h-40 flex items-center justify-center bg-white">
+                                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=MF-VIP-MATEOG-2026&color=14183c" alt="Código QR VIP" class="w-full h-full object-contain" />
+                                            <div class="qr-laser"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="text-center font-sans text-[10px] text-outline tracking-wide">
+                                    Aproxima este código al lector domo de entrada
+                                </p>
+                            </div>
+
+                            <!-- Botón de Simulación de Escaneo -->
+                            <button onclick="triggerScan()" id="btn-scan" class="w-full py-4 bg-primary text-white rounded-full font-headline font-bold text-sm uppercase tracking-wider shadow-md hover:bg-primary/90 active:scale-95 duration-200 flex items-center justify-center gap-2 border border-primary-container/20">
+                                <span class="material-symbols-outlined text-lg">barcode_reader</span>
+                                Simular Escaneo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- VISTA 2: PANEL ADMINISTRADOR (DASHBOARD MUNDO FIESTA) -->
+                    <div id="view-dashboard" class="flex-1 flex flex-col overflow-y-auto no-scrollbar hidden bg-[#f8fafc]">
+                        <!-- Header del Dashboard Centrado y Grande -->
+                        <div class="p-6 flex flex-col items-center justify-center bg-white border-b border-outline-variant/10 shadow-sm shrink-0 space-y-2">
+                            <img src="logo2.png" alt="Mundo Fiesta" class="h-16 w-auto object-contain" onerror="this.src='logo.jpg'; this.onerror=null;"/>
+                            <span class="font-headline font-bold text-sm text-primary tracking-tight">PANEL ADMINISTRATIVO</span>
+                            <p class="text-[8px] uppercase tracking-wider text-outline font-bold leading-none">Monitoreo de Puerta A</p>
+                        </div>
+
+                        <!-- Bento Grid -->
+                        <div class="p-4 space-y-4 flex-1">
+                            <!-- Tarjetas de métricas -->
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-white rounded-2xl border border-outline-variant/20 p-4 friendly-shadow space-y-1">
+                                    <span class="material-symbols-outlined text-primary text-lg">groups</span>
+                                    <p class="text-[9px] font-bold text-outline uppercase tracking-wider">Aforo Actual</p>
+                                    <div class="flex items-baseline gap-1 mt-1">
+                                        <span id="dash-aforo" class="font-headline font-bold text-xl text-on-surface">842</span>
+                                        <span class="text-[8px] text-outline">/ 1200</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white rounded-2xl border border-outline-variant/20 p-4 friendly-shadow space-y-1">
+                                    <span class="material-symbols-outlined text-secondary text-lg">check_circle</span>
+                                    <p class="text-[9px] font-bold text-outline uppercase tracking-wider">Escaneos Hoy</p>
+                                    <div class="flex items-baseline mt-1">
+                                        <span id="dash-escaneos" class="font-headline font-bold text-xl text-on-surface">3,450</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Estado de Hardware en Vivo -->
+                            <div class="bg-white rounded-2xl border border-outline-variant/20 p-4 friendly-shadow space-y-3">
+                                <h4 class="font-headline font-bold text-xs text-on-surface border-b border-outline-variant/10 pb-2 flex items-center justify-between">
+                                    <span>Monitoreo de Hardware</span>
+                                    <span class="text-[8px] font-bold text-secondary uppercase tracking-widest flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-secondary inline-block animate-pulse"></span> OK
+                                    </span>
+                                </h4>
+                                
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center text-xs">
+                                        <div class="flex items-center gap-2 text-outline">
+                                            <span class="material-symbols-outlined text-[16px] text-primary">memory</span>
+                                            <span>ESP32 Core</span>
+                                        </div>
+                                        <span class="text-[9px] font-bold bg-secondary/10 text-secondary px-2 py-0.5 rounded-full uppercase">ONLINE</span>
+                                    </div>
+                                    <div class="flex justify-between items-center text-xs">
+                                        <div class="flex items-center gap-2 text-outline">
+                                            <span class="material-symbols-outlined text-[16px] text-tertiary">barcode_scanner</span>
+                                            <span>Lector Domo</span>
+                                        </div>
+                                        <span class="text-[9px] font-bold bg-secondary/10 text-secondary px-2 py-0.5 rounded-full uppercase">LISTO</span>
+                                    </div>
+                                    <div class="flex justify-between items-center text-xs">
+                                        <div class="flex items-center gap-2 text-outline">
+                                            <span class="material-symbols-outlined text-[16px] text-primary">power</span>
+                                            <span>Módulo Relé</span>
+                                        </div>
+                                        <span id="dash-relay-status" class="text-[9px] font-bold bg-slate-100 text-outline px-2 py-0.5 rounded-full uppercase transition-colors">INACTIVO</span>
+                                    </div>
+                                    <div class="flex justify-between items-center text-xs">
+                                        <div class="flex items-center gap-2 text-outline">
+                                            <span class="material-symbols-outlined text-[16px] text-secondary">lock</span>
+                                            <span>Torniquete</span>
+                                        </div>
+                                        <span id="dash-gate-status" class="text-[9px] font-bold bg-slate-100 text-outline px-2 py-0.5 rounded-full uppercase transition-colors">BLOQUEADO</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Registro en Vivo -->
+                            <div class="bg-white rounded-2xl border border-outline-variant/20 p-4 friendly-shadow flex flex-col min-h-[180px] max-h-[220px]">
+                                <h4 class="font-headline font-bold text-xs text-on-surface border-b border-outline-variant/10 pb-2 mb-2 flex items-center justify-between shrink-0">
+                                    <span>Registro de Accesos</span>
+                                    <span class="text-[8px] font-bold text-primary uppercase tracking-widest">En Vivo</span>
+                                </h4>
+                                
+                                <div class="flex-1 overflow-y-auto space-y-2 pr-1 no-scrollbar" id="logs-container">
+                                    <!-- Los logs se insertan dinámicamente aquí -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= BARRA DE NAVEGACIÓN INFERIOR DE LA APP ================= -->
+                    <nav class="absolute bottom-0 left-0 w-full z-45 flex justify-around items-center px-4 py-2.5 bg-white border-t border-outline-variant/20 shadow-lg rounded-t-2xl shrink-0">
+                        <!-- Botón Info (Solo visible en pantallas móviles, oculto en desktop) -->
+                        <button onclick="switchTab('presentacion')" id="tab-presentacion" class="flex flex-col items-center justify-center py-1 px-4 rounded-xl transition-all duration-200 text-outline active:scale-95 lg:hidden">
+                            <span class="material-symbols-outlined text-lg">info</span>
+                            <span class="text-[8px] font-bold uppercase tracking-wider mt-0.5">Info</span>
+                        </button>
+                        <!-- Botón APP MUNDO FIESTA -->
+                        <button onclick="switchTab('app')" id="tab-app" class="flex flex-col items-center justify-center py-1 px-4 rounded-xl transition-all duration-200 text-primary bg-primary/10 active:scale-95">
+                            <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">qr_code_2</span>
+                            <span class="text-[8px] font-bold uppercase tracking-wider mt-0.5">App MF</span>
+                        </button>
+                        <!-- Botón Dashboard -->
+                        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="flex flex-col items-center justify-center py-1 px-4 rounded-xl transition-all duration-200 text-outline active:scale-95">
+                            <span class="material-symbols-outlined text-lg">dashboard</span>
+                            <span class="text-[8px] font-bold uppercase tracking-wider mt-0.5">Dashboard</span>
+                        </button>
+                    </nav>
+
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================= JAVASCRIPT DEL SIMULADOR E INTERACTIVIDAD ================= -->
+    <script>
+        // --- ESTADO GLOBAL SIMULADO ---
+        let currentAforo = 842;
+        let currentEscaneos = 3450;
+        let activeTab = 'presentacion'; // 'presentacion', 'app', 'dashboard'
+        let isScanning = false;
+        
+        // Logs iniciales
+        let logsList = [
+            { time: "14:10:22", name: "Mateo R.", type: "Pase Oro VIP", status: "PERMITIDO", icon: "face" },
+            { time: "14:08:15", name: "Sofía M.", type: "Pase Estándar", status: "PERMITIDO", icon: "face_3" },
+            { time: "14:05:40", name: "Desconocido", type: "Pulsera Inválida", status: "DENEGADO", icon: "block" },
+            { time: "13:58:10", name: "Lucía B.", type: "Pase Plata VIP", status: "PERMITIDO", icon: "face_3" }
+        ];
+
+        // --- INICIALIZACIÓN ---
+        document.addEventListener("DOMContentLoaded", () => {
+            renderLogs();
+            selectHW('celular'); // Selección por defecto en diagrama
+            updateTotalBudget(); // Sincronizar presupuesto de venta al cargar
+            
+            // Detectar automáticamente y establecer la pestaña por defecto
+            if (window.innerWidth >= 1024) {
+                switchTab('app'); 
+            } else {
+                switchTab('presentacion'); 
+            }
+        });
+
+        // --- FUNCIÓN DE CONTROL DE PESTAÑAS (MÓVIL Y DESKTOP) ---
+        function switchTab(tab) {
+            activeTab = tab;
+            
+            const docSection = document.getElementById("doc-section");
+            const simulatorSection = document.getElementById("simulator-section");
+
+            const viewApp = document.getElementById("view-app");
+            const viewDashboard = document.getElementById("view-dashboard");
+
+            const tabPresentacion = document.getElementById("tab-presentacion");
+            const tabApp = document.getElementById("tab-app");
+            const tabDashboard = document.getElementById("tab-dashboard");
+
+            // Resetear estados activos de la barra de navegación
+            [tabPresentacion, tabApp, tabDashboard].forEach(t => {
+                if(t) {
+                    t.classList.remove("text-primary", "bg-primary/10");
+                    t.classList.add("text-outline");
+                }
+            });
+
+            if (window.innerWidth >= 1024) {
+                // --- MODO ESCRITORIO ---
+                docSection.classList.remove("hidden");
+                docSection.classList.add("block");
+                simulatorSection.classList.remove("hidden");
+                simulatorSection.classList.add("flex");
+
+                // Ocultar vistas de simulación
+                [viewApp, viewDashboard].forEach(v => {
+                    if(v) v.classList.add("hidden");
+                });
+
+                if (tab === 'presentacion' || tab === 'app') {
+                    activeTab = 'app';
+                    viewApp.classList.remove("hidden");
+                    tabApp.classList.add("text-primary", "bg-primary/10");
+                    tabApp.classList.remove("text-outline");
+                } else if (tab === 'dashboard') {
+                    viewDashboard.classList.remove("hidden");
+                    tabDashboard.classList.add("text-primary", "bg-primary/10");
+                    tabDashboard.classList.remove("text-outline");
+                }
+            } else {
+                // --- MODO MÓVIL ---
+                if (tab === 'presentacion') {
+                    docSection.classList.remove("hidden");
+                    docSection.classList.add("block");
+                    simulatorSection.classList.add("hidden");
+                    simulatorSection.classList.remove("flex");
+
+                    tabPresentacion.classList.add("text-primary", "bg-primary/10");
+                    tabPresentacion.classList.remove("text-outline");
+                } else {
+                    docSection.classList.add("hidden");
+                    docSection.classList.remove("block");
+                    simulatorSection.classList.remove("hidden");
+                    simulatorSection.classList.add("block");
+
+                    [viewApp, viewDashboard].forEach(v => {
+                        if(v) v.classList.add("hidden");
+                    });
+
+                    if (tab === 'app') {
+                        viewApp.classList.remove("hidden");
+                        tabApp.classList.add("text-primary", "bg-primary/10");
+                        tabApp.classList.remove("text-outline");
+                    } else if (tab === 'dashboard') {
+                        viewDashboard.classList.remove("hidden");
+                        tabDashboard.classList.add("text-primary", "bg-primary/10");
+                        tabDashboard.classList.remove("text-outline");
+                    }
+                }
+            }
+        }
+
+        // Detección automática al redimensionar la ventana
+        window.addEventListener("resize", () => {
+            switchTab(activeTab);
+        });
+
+        // --- INTERACTIVIDAD DEL DIAGRAMA SIMPLIFICADO ---
+        const hwSpecs = {
+            celular: {
+                title: "1. Celular del Cliente (Pase QR)",
+                desc: "El cliente muestra su Pase VIP digital en la pantalla de su celular al aproximarse al acceso. No requiere tickets impresos que puedan perderse, agilizando la entrada desde el primer segundo."
+            },
+            domo: {
+                title: "2. Escáner Omnidireccional Láser",
+                desc: "Ubicado al frente, captura la imagen del código QR desde cualquier ángulo en milisegundos. Evita tener que alinear perfectamente el teléfono, logrando una lectura fluida e inmediata."
+            },
+            esp32: {
+                title: "3. Cerebro Inteligente (ESP32)",
+                desc: "Un procesador de alta velocidad oculto dentro del pedestal. Recibe los datos del escáner y se conecta vía Wi-Fi seguro a internet para verificar la validez del pase con el servidor en menos de 0.2 segundos."
+            },
+            torniquete: {
+                title: "4. Apertura y Paso por el Torniquete",
+                desc: "Si el código está vigente, el cerebro activa un interruptor electrónico (Relé) que libera el torniquete de acero inoxidable. El brazo gira suavemente permitiendo un paso seguro para el menor y su representante."
+            }
+        };
+
+        function selectHW(key) {
+            const specs = hwSpecs[key];
+            if(!specs) return;
+
+            document.getElementById("hw-title").innerHTML = `
+                <span class="material-symbols-outlined text-[16px] text-amber-400">info</span>
+                ${specs.title}
+            `;
+            document.getElementById("hw-desc").innerText = specs.desc;
+
+            // Resaltar hotspot activo
+            const keys = ['celular', 'domo', 'esp32', 'torniquete'];
+            keys.forEach(k => {
+                const btn = document.getElementById(`hotspot-${k}`);
+                const ring = document.getElementById(`ring-${k}`);
+                if (btn && ring) {
+                    if (k === key) {
+                        btn.className = "relative flex items-center justify-center h-6 w-6 rounded-full bg-secondary text-white border-2 border-white text-[10px] font-bold shadow-md scale-110 transition-transform duration-200";
+                        ring.className = "absolute inline-flex h-8 w-8 rounded-full bg-secondary opacity-45 hotspot-ring -left-1 -top-1";
+                    } else {
+                        btn.className = "relative flex items-center justify-center h-6 w-6 rounded-full bg-tertiary text-white border-2 border-white text-[10px] font-bold shadow-md hover:scale-110 transition-transform duration-200";
+                        ring.className = "absolute inline-flex h-8 w-8 rounded-full bg-tertiary opacity-45 hotspot-ring -left-1 -top-1";
+                    }
+                }
+            });
+        }
+
+        // --- MOTOR DE SIMULACIÓN DE ESCANEO ---
+        function triggerScan() {
+            if (isScanning) return;
+            isScanning = true;
+
+            const qrContainer = document.getElementById("qr-container");
+            const clientStatus = document.getElementById("client-status");
+            const btnScan = document.getElementById("btn-scan");
+
+            qrContainer.classList.add("scanning");
+            clientStatus.innerHTML = `
+                <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+                <span class="text-on-tertiary-container font-sans font-bold text-[9px] uppercase tracking-widest">Escaneando...</span>
+            `;
+            clientStatus.className = "inline-flex items-center gap-1.5 bg-tertiary-container/20 border border-tertiary/20 rounded-full px-3 py-1 mt-1";
+            btnScan.disabled = true;
+            btnScan.innerHTML = `<span class="material-symbols-outlined text-lg animate-spin">sync</span> Procesando...`;
+
+            playScanBeep();
+
+            setTimeout(() => {
+                currentAforo++;
+                currentEscaneos++;
+
+                document.getElementById("dash-aforo").innerText = currentAforo;
+                document.getElementById("dash-escaneos").innerText = currentEscaneos;
+
+                clientStatus.innerHTML = `
+                    <span class="w-2 h-2 rounded-full bg-secondary pulse-green"></span>
+                    <span class="text-on-secondary-container font-sans font-bold text-[9px] uppercase tracking-widest">¡Acceso Concedido!</span>
+                `;
+                clientStatus.className = "inline-flex items-center gap-1.5 bg-secondary-container/20 border border-secondary/20 rounded-full px-3 py-1 mt-1";
+
+                const now = new Date();
+                const timeStr = now.toTimeString().split(' ')[0];
+                logsList.unshift({
+                    time: timeStr,
+                    name: "Mateo García",
+                    type: "Pase Oro VIP",
+                    status: "PERMITIDO",
+                    icon: "face",
+                    isNew: true
+                });
+                renderLogs();
+
+                const dashRelay = document.getElementById("dash-relay-status");
+                const dashGate = document.getElementById("dash-gate-status");
+                
+                if (dashRelay && dashGate) {
+                    dashRelay.innerText = "ACTIVO (PULSO)";
+                    dashRelay.className = "text-[9px] font-bold bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full uppercase";
+                    
+                    dashGate.innerText = "DESBLOQUEADO";
+                    dashGate.className = "text-[9px] font-bold bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full uppercase";
+                }
+
+                setTimeout(() => {
+                    qrContainer.classList.remove("scanning");
+                    clientStatus.innerHTML = `
+                        <span class="w-2 h-2 rounded-full bg-secondary pulse-green"></span>
+                        <span class="text-on-secondary-container font-sans font-bold text-[9px] uppercase tracking-widest">Acceso Autorizado</span>
+                    `;
+                    clientStatus.className = "inline-flex items-center gap-1.5 bg-secondary-container/20 border border-secondary/20 rounded-full px-3 py-1 mt-1";
+                    
+                    btnScan.disabled = false;
+                    btnScan.innerHTML = `
+                        <span class="material-symbols-outlined text-lg">barcode_reader</span>
+                        Simular Escaneo
+                    `;
+                    isScanning = false;
+
+                    if (dashRelay && dashGate) {
+                        dashRelay.innerText = "INACTIVO";
+                        dashRelay.className = "text-[9px] font-bold bg-slate-100 text-outline px-2 py-0.5 rounded-full uppercase";
+                        
+                        dashGate.innerText = "BLOQUEADO";
+                        dashGate.className = "text-[9px] font-bold bg-slate-100 text-outline px-2 py-0.5 rounded-full uppercase";
+                    }
+                }, 3000);
+
+            }, 1200);
+        }
+
+        function playScanBeep() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.03);
+                gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.12);
+                
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.12);
+            } catch (e) {
+                console.log("AudioContext bloqueado.");
+            }
+        }
+
+        // --- RENDERIZACIÓN DE LOGS ---
+        function renderLogs() {
+            const container = document.getElementById("logs-container");
+            if (!container) return;
+            
+            container.innerHTML = "";
+            logsList.forEach(log => {
+                const logDiv = document.createElement("div");
+                
+                logDiv.className = `flex items-center justify-between p-3 rounded-xl border transition-all duration-300 ${
+                    log.status === 'DENEGADO' 
+                        ? 'border-error/20 bg-error-container/10' 
+                        : 'border-outline-variant/10 bg-slate-50'
+                }`;
+
+                if (log.isNew) {
+                    logDiv.classList.add("log-entry-new");
+                    delete log.isNew;
+                }
+
+                logDiv.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full ${log.status === 'DENEGADO' ? 'bg-error/10 text-error' : 'bg-primary/10 text-primary'} flex items-center justify-center text-primary shrink-0">
+                            <span class="material-symbols-outlined text-[18px]">${log.icon}</span>
+                        </div>
+                        <div>
+                            <p class="font-headline font-bold text-xs text-on-surface">${log.name}</p>
+                            <p class="text-[9px] text-outline mt-0.5 leading-none">${log.type}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[8px] font-bold px-2 py-0.5 rounded uppercase ${
+                            log.status === 'DENEGADO' 
+                                ? 'bg-error/15 text-error border border-error/20' 
+                                : 'bg-secondary/15 text-secondary border border-secondary/20'
+                        }">${log.status}</span>
+                        <p class="text-[8px] text-outline mt-1 leading-none font-sans">${log.time}</p>
+                    </div>
+                `;
+                
+                container.appendChild(logDiv);
+            });
+        }
+
+        // --- CÁLCULO DINÁMICO DEL PRESUPUESTO COMERCIAL ---
+        function updateTotalBudget() {
+            const checkTorniquete = document.getElementById("check-torniquete");
+            const totalInversion = document.getElementById("total-inversion");
+            const rowTorniquete = document.getElementById("row-torniquete");
+
+            if (!checkTorniquete || !totalInversion || !rowTorniquete) return;
+
+            const isTorniqueteChecked = checkTorniquete.checked;
+            
+            // Ítems base fijos: Lector ($80), ESP32 ($80), Relé ($70), Desarrollo ($350), Mano de obra ($200)
+            let baseTotal = 80 + 80 + 70 + 350 + 200; 
+
+            if (isTorniqueteChecked) {
+                baseTotal += 1450;
+                rowTorniquete.classList.remove("opacity-45");
+            } else {
+                rowTorniquete.classList.add("opacity-45");
+            }
+
+            totalInversion.innerText = `$${baseTotal.toLocaleString('en-US')} USD`;
+        }
+
+        // --- FONDO INTERACTIVO SUTIL DE ICONOS FLOTANTES ---
+        (function() {
+            const canvas = document.getElementById('interactive-bg');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const scrollContainer = document.getElementById('doc-section');
+            
+            let width = scrollContainer.clientWidth;
+            let height = scrollContainer.scrollHeight;
+            canvas.width = width;
+            canvas.height = height;
+
+            const particles = [];
+            const colors = [
+                'rgba(0, 100, 147, 0.04)',  /* Primary Blue sutil */
+                'rgba(172, 247, 117, 0.045)',  /* Green sutil */
+                'rgba(213, 147, 11, 0.035)'     /* Yellow sutil */
+            ];
+
+            const mouse = { x: null, y: null, radius: 140 };
+
+            scrollContainer.addEventListener('mousemove', (e) => {
+                const rect = scrollContainer.getBoundingClientRect();
+                mouse.x = e.clientX - rect.left + scrollContainer.scrollLeft;
+                mouse.y = e.clientY - rect.top + scrollContainer.scrollTop;
+            });
+
+            scrollContainer.addEventListener('mouseleave', () => {
+                mouse.x = null;
+                mouse.y = null;
+            });
+
+            const iconTypes = ['qr', 'phone', 'user', 'tech', 'entrance'];
+
+            class FloatingIcon {
+                constructor() {
+                    this.type = iconTypes[Math.floor(Math.random() * iconTypes.length)];
+                    this.size = Math.random() * 24 + 20; // Tamaño entre 20 y 44 px
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                    this.vx = (Math.random() - 0.5) * 0.25; // Movimiento muy lento
+                    this.vy = (Math.random() - 0.5) * 0.25;
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.rotationSpeed = (Math.random() - 0.5) * 0.005;
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.angle);
+                    ctx.strokeStyle = this.color;
+                    ctx.fillStyle = this.color;
+                    ctx.lineWidth = 1.5;
+
+                    const s = this.size;
+                    const half = s / 2;
+
+                    if (this.type === 'qr') {
+                        // Dibujar contorno exterior
+                        ctx.strokeRect(-half, -half, s, s);
+                        // Patrones de esquina (3 detectores)
+                        const p = s * 0.28;
+                        // Top-left
+                        ctx.strokeRect(-half + 2, -half + 2, p, p);
+                        ctx.fillRect(-half + 4, -half + 4, p - 4, p - 4);
+                        // Top-right
+                        ctx.strokeRect(half - p - 2, -half + 2, p, p);
+                        ctx.fillRect(half - p, -half + 4, p - 4, p - 4);
+                        // Bottom-left
+                        ctx.strokeRect(-half + 2, half - p - 2, p, p);
+                        ctx.fillRect(-half + 4, half - p, p - 4, p - 4);
+                        // Unos pixeles centrales simulados
+                        ctx.fillRect(0, 0, 4, 4);
+                        ctx.fillRect(2, 4, 3, 3);
+                        ctx.fillRect(4, -2, 2, 5);
+                    } else if (this.type === 'phone') {
+                        // Teléfono
+                        const w = s * 0.6;
+                        const h = s;
+                        // Cuerpo del teléfono
+                        ctx.beginPath();
+                        if (ctx.roundRect) {
+                            ctx.roundRect(-w/2, -h/2, w, h, 4);
+                        } else {
+                            ctx.rect(-w/2, -h/2, w, h);
+                        }
+                        ctx.stroke();
+                        // Botón o barra inferior
+                        ctx.beginPath();
+                        ctx.moveTo(-w*0.2, h/2 - 4);
+                        ctx.lineTo(w*0.2, h/2 - 4);
+                        ctx.stroke();
+                        // Cámara/parlante superior
+                        ctx.beginPath();
+                        ctx.moveTo(-w*0.15, -h/2 + 4);
+                        ctx.lineTo(w*0.15, -h/2 + 4);
+                        ctx.stroke();
+                        // Pantalla interna (línea sutil)
+                        ctx.strokeRect(-w/2 + 2, -h/2 + 7, w - 4, h - 14);
+                    } else if (this.type === 'user') {
+                        // Usuario
+                        const rHead = s * 0.25;
+                        // Cabeza
+                        ctx.beginPath();
+                        ctx.arc(0, -s*0.2, rHead, 0, Math.PI * 2);
+                        ctx.stroke();
+                        // Hombros/cuerpo
+                        ctx.beginPath();
+                        ctx.arc(0, s*0.4, s*0.45, Math.PI, 0, false);
+                        ctx.stroke();
+                    } else if (this.type === 'tech') {
+                        // Chip / Electrónica / CPU
+                        const chipSize = s * 0.65;
+                        ctx.strokeRect(-chipSize/2, -chipSize/2, chipSize, chipSize);
+                        
+                        // Pines (patas del chip)
+                        const pinLen = s * 0.15;
+                        const pinSpacing = chipSize / 4;
+                        
+                        for (let i = -1.5; i <= 1.5; i += 1) {
+                            const offset = i * pinSpacing;
+                            // Arriba
+                            ctx.beginPath(); ctx.moveTo(offset, -chipSize/2); ctx.lineTo(offset, -chipSize/2 - pinLen); ctx.stroke();
+                            // Abajo
+                            ctx.beginPath(); ctx.moveTo(offset, chipSize/2); ctx.lineTo(offset, chipSize/2 + pinLen); ctx.stroke();
+                            // Izquierda
+                            ctx.beginPath(); ctx.moveTo(-chipSize/2, offset); ctx.lineTo(-chipSize/2 - pinLen, offset); ctx.stroke();
+                            // Derecha
+                            ctx.beginPath(); ctx.moveTo(chipSize/2, offset); ctx.lineTo(chipSize/2 + pinLen, offset); ctx.stroke();
+                        }
+                        // Círculo central
+                        ctx.beginPath();
+                        ctx.arc(0, 0, chipSize*0.2, 0, Math.PI * 2);
+                        ctx.stroke();
+                    } else if (this.type === 'entrance') {
+                        // Entrada / Flecha de paso
+                        ctx.beginPath();
+                        ctx.arc(0, 0, s*0.4, 0.2, Math.PI*2 - 0.2);
+                        ctx.stroke();
+                        
+                        // Flecha indicando entrada
+                        ctx.beginPath();
+                        ctx.moveTo(-s*0.2, 0);
+                        ctx.lineTo(s*0.2, 0);
+                        // Punta de la flecha
+                        ctx.lineTo(s*0.05, -s*0.15);
+                        ctx.moveTo(s*0.2, 0);
+                        ctx.lineTo(s*0.05, s*0.15);
+                        ctx.stroke();
+                    }
+
+                    ctx.restore();
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.angle += this.rotationSpeed;
+
+                    // Rebotar en bordes
+                    const padding = this.size;
+                    if (this.x - padding < 0 || this.x + padding > width) this.vx = -this.vx;
+                    if (this.y - padding < 0 || this.y + padding > height) this.vy = -this.vy;
+
+                    // Interacción física con el mouse (se alejan suavemente)
+                    if (mouse.x !== null && mouse.y !== null) {
+                        const dx = this.x - mouse.x;
+                        const dy = this.y - mouse.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < mouse.radius) {
+                            const force = (mouse.radius - distance) / mouse.radius;
+                            const angle = Math.atan2(dy, dx);
+                            // Desplazamiento reactivo sutil
+                            this.x += Math.cos(angle) * force * 2;
+                            this.y += Math.sin(angle) * force * 2;
+                        }
+                    }
+                }
+            }
+
+            function initIcons() {
+                particles.length = 0;
+                // Densidad adaptativa al alto del contenido (mayor cantidad de iconos)
+                const numberOfParticles = Math.floor((width * height) / 14000);
+                for (let i = 0; i < numberOfParticles; i++) {
+                    particles.push(new FloatingIcon());
+                }
+            }
+
+            function animateIcons() {
+                ctx.clearRect(0, 0, width, height);
+                // Si la altura del contenedor cambia (ej. al abrir detalles), reajustar canvas
+                if (scrollContainer.scrollHeight !== height || scrollContainer.clientWidth !== width) {
+                    width = scrollContainer.clientWidth;
+                    height = scrollContainer.scrollHeight;
+                    canvas.width = width;
+                    canvas.height = height;
+                }
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                requestAnimationFrame(animateIcons);
+            }
+
+            // Monitorear redimensionado del viewport
+            window.addEventListener('resize', () => {
+                width = scrollContainer.clientWidth;
+                height = scrollContainer.scrollHeight;
+                canvas.width = width;
+                canvas.height = height;
+                initIcons();
+            });
+
+            initIcons();
+            animateIcons();
+        })();
+    </script>
+</body>
+</html>
