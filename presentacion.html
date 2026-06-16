@@ -213,43 +213,71 @@
                 </div>
 
                 <!-- El Viaje del Usuario (Flujo de Ingreso) -->
-                <div class="space-y-4">
+                <div class="space-y-6">
                     <h3 class="font-headline font-bold text-base text-on-surface flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-lg">directions_run</span>
-                        El Viaje del Usuario
+                        El Viaje del Usuario (Flujo del Proceso)
                     </h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Paso 1 -->
-                        <div class="bg-slate-50 p-4 rounded-xl border border-outline-variant/10 flex gap-3">
-                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold font-headline text-xs shrink-0">1</div>
-                            <div class="space-y-0.5">
-                                <h4 class="font-headline font-bold text-xs text-on-surface">Aproximación</h4>
-                                <p class="text-[10px] text-on-surface-variant leading-relaxed">El padre/madre abre el Pase VIP digital en la pantalla de su teléfono celular al llegar.</p>
+                    <!-- Contenedor del Flujo Vertical Conectado -->
+                    <div class="relative pl-6 border-l-2 border-primary-container/40 space-y-6 ml-3">
+                         <!-- Paso 1 -->
+                        <div class="relative">
+                            <!-- Nodo indicador en la línea -->
+                            <div class="absolute -left-[35px] top-0.5 bg-primary text-white font-bold font-headline text-[10px] w-6 h-6 rounded-full flex items-center justify-center border-4 border-white shadow">1</div>
+                            <div class="space-y-1">
+                                <h4 class="font-headline font-bold text-xs text-on-surface flex items-center gap-1.5">
+                                    Aproximación
+                                    <span class="material-symbols-outlined text-[10px] text-primary">arrow_forward</span>
+                                </h4>
+                                <p class="text-[10px] text-on-surface-variant leading-relaxed">
+                                    El padre/madre abre la **APP MUNDO FIESTA** y despliega su Pase digital en la pantalla de su teléfono celular al aproximarse a la entrada.
+                                </p>
                             </div>
                         </div>
+
                         <!-- Paso 2 -->
-                        <div class="bg-slate-50 p-4 rounded-xl border border-outline-variant/10 flex gap-3">
-                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold font-headline text-xs shrink-0">2</div>
-                            <div class="space-y-0.5">
-                                <h4 class="font-headline font-bold text-xs text-on-surface">Escaneo Instantáneo</h4>
-                                <p class="text-[10px] text-on-surface-variant leading-relaxed">El usuario aproxima el teléfono al Lector Domo 9300D. Se escanea en cualquier ángulo.</p>
+                        <div class="relative">
+                            <!-- Nodo indicador en la línea -->
+                            <div class="absolute -left-[35px] top-0.5 bg-primary text-white font-bold font-headline text-[10px] w-6 h-6 rounded-full flex items-center justify-center border-4 border-white shadow">2</div>
+                            <div class="space-y-1">
+                                <h4 class="font-headline font-bold text-xs text-on-surface flex items-center gap-1.5">
+                                    Escaneo Instantáneo
+                                    <span class="material-symbols-outlined text-[10px] text-primary">arrow_forward</span>
+                                </h4>
+                                <p class="text-[10px] text-on-surface-variant leading-relaxed">
+                                    Aproxima la pantalla del celular al **Lector Domo QR 9300D**, el cual captura el código de barras bidimensional en milisegundos en cualquier ángulo.
+                                </p>
                             </div>
                         </div>
+
                         <!-- Paso 3 -->
-                        <div class="bg-slate-50 p-4 rounded-xl border border-outline-variant/10 flex gap-3">
-                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold font-headline text-xs shrink-0">3</div>
-                            <div class="space-y-0.5">
-                                <h4 class="font-headline font-bold text-xs text-on-surface">Validación Invisible</h4>
-                                <p class="text-[10px] text-on-surface-variant leading-relaxed">El ESP32 local valida el código en milisegundos mediante Wi-Fi con el servidor central.</p>
+                        <div class="relative">
+                            <!-- Nodo indicador en la línea -->
+                            <div class="absolute -left-[35px] top-0.5 bg-primary text-white font-bold font-headline text-[10px] w-6 h-6 rounded-full flex items-center justify-center border-4 border-white shadow">3</div>
+                            <div class="space-y-1">
+                                <h4 class="font-headline font-bold text-xs text-on-surface flex items-center gap-1.5">
+                                    Validación Invisible
+                                    <span class="material-symbols-outlined text-[10px] text-primary">arrow_forward</span>
+                                </h4>
+                                <p class="text-[10px] text-on-surface-variant leading-relaxed">
+                                    El microcontrolador **ESP32** recibe el código decodificado, lo valida vía Wi-Fi con el servidor local o la base de datos en la nube y autoriza el paso emitiendo un pitido de confirmación.
+                                </p>
                             </div>
                         </div>
+
                         <!-- Paso 4 -->
-                        <div class="bg-slate-50 p-4 rounded-xl border border-outline-variant/10 flex gap-3">
-                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold font-headline text-xs shrink-0">4</div>
-                            <div class="space-y-0.5">
-                                <h4 class="font-headline font-bold text-xs text-on-surface">Apertura Mecánica</h4>
-                                <p class="text-[10px] text-on-surface-variant leading-relaxed">El relé de contacto seco manda el pulso y el torniquete se desbloquea suavemente.</p>
+                        <div class="relative">
+                            <!-- Nodo indicador en la línea -->
+                            <div class="absolute -left-[35px] top-0.5 bg-secondary text-white font-bold font-headline text-[10px] w-6 h-6 rounded-full flex items-center justify-center border-4 border-white shadow">4</div>
+                            <div class="space-y-1">
+                                <h4 class="font-headline font-bold text-xs text-secondary flex items-center gap-1.5">
+                                    Acceso Liberado
+                                    <span class="material-symbols-outlined text-[10px] text-secondary">check_circle</span>
+                                </h4>
+                                <p class="text-[10px] text-on-surface-variant leading-relaxed">
+                                    El **Módulo Relé** recibe la señal de apertura de contacto seco y desbloquea el solenoide del **Torniquete**, permitiendo el ingreso seguro y sumando la entrada al aforo del sistema en tiempo real.
+                                </p>
                             </div>
                         </div>
                     </div>
